@@ -1,15 +1,41 @@
-## Put comments here that give an overall description of what your
-## functions do
+## using scoping rules of r we are first creating a function that can cache its
+## inverse to save computation time of recalculating same thing everything.
 
-## Write a short comment describing this function
+
+## makeCachematrix : This function creates a specil matrix object that can cache its inverse
 
 makeCacheMatrix <- function(x = matrix()) {
-
+  inv = NULL
+  set = function(y) {
+    x <<- y
+    inv <<- NULL
+  }
+  get = function() x
+  setinv = function(inverse) inv <<- inverse 
+  getinv = function() inv
+  list(set=set, get=get, 
+       setinv=setinv, 
+       getinv=getinv)
 }
+# creating randon number matrix
+s <- matrix(rnorm(24),2,2)
+# taking cache
+scache <- makeCacheMatrix(s)
 
-
-## Write a short comment describing this function
+## inverse from the cache
 
 cacheSolve <- function(x, ...) {
-        ## Return a matrix that is the inverse of 'x'
+  inve = x$getinv()
+  if (!is.null(inv)){
+    message("get cached data")
+    return(inv)
+  }
+  mat.data = x$get()
+  inv = solve(mat.data, ...)
+  x$setinv(inv)
+  return(inv)
 }
+
+# testing function
+cacheSolve(scache) 
+
